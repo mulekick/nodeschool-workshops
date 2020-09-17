@@ -1,8 +1,6 @@
-/* eslint-disable multiline-comment-style */
 'use strict';
 
-const
-    {Transform} = require(`stream`);
+const {Transform} = require(`stream`);
 
 class caseconverter extends Transform {
     // eslint-disable-next-line no-useless-constructor
@@ -15,7 +13,7 @@ class caseconverter extends Transform {
     _transform(chunk, encoding, callback) {
 
         // eslint-disable-next-line no-param-reassign
-        chunk = typeof chunk === `string` ? chunk : chunk.toString();
+        chunk = typeof chunk === `string` ? chunk : chunk.toString(`utf8`);
 
         // Data is delimited by carriage return ...
         if (chunk.match(/\n/gu)) {
@@ -24,7 +22,7 @@ class caseconverter extends Transform {
                 s = chunk.split(/\n/u),
                 v = `${ this.line }${ s.shift() }\n`;
             this.line = ``;
-            this.unshift(s.join(`   `));
+            this.unshift(s.join(`\n`));
             this.push(++this.counter % 2 === 0 ? v.toUpperCase() : v.toLowerCase());
         } else {
             this.line += chunk;
@@ -32,7 +30,7 @@ class caseconverter extends Transform {
         callback();
     }
 
-    _flush(callback) {
+    _final(callback) {
         const
             v = `${ this.line }\n`;
         this.push(++this.counter % 2 === 0 ? v.toUpperCase() : v.toLowerCase());
@@ -40,8 +38,7 @@ class caseconverter extends Transform {
     }
 }
 
-const
-    transformer = new caseconverter();
+const transformer = new caseconverter();
 
 process.stdin
     .pipe(transformer)

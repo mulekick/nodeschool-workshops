@@ -1,6 +1,8 @@
 'use strict';
 
-const {Readable} = require(`stream`);
+const
+    {Readable} = require(`stream`),
+    v = process.argv[2];
 
 class bufferreader extends Readable {
     // eslint-disable-next-line no-useless-constructor
@@ -8,18 +10,13 @@ class bufferreader extends Readable {
         super(options);
     }
 
-    setdata(s) {
-        this.push(Buffer.from(s, `utf8`));
+    // eslint-disable-next-line class-methods-use-this
+    _read() {
+        this.push(Buffer.from(v, `utf8`));
         this.push(null);
     }
-
-    // eslint-disable-next-line class-methods-use-this
-    _read() {}
 }
 
-const
-    readable = new bufferreader(),
-    v = process.argv[2];
+const readable = new bufferreader();
 
-readable.setdata(v);
 readable.pipe(process.stdout);

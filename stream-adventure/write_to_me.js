@@ -10,12 +10,11 @@ class consolewriter extends Writable {
 
     // eslint-disable-next-line class-methods-use-this
     _write(chunk, encoding, callback) {
-        console.log(`writing: ${ typeof chunk === `string` ? chunk : chunk.toString() }`);
+        console.log(`writing: ${ typeof chunk === `string` ? chunk : chunk.toString(`utf8`) }`);
         callback();
     }
 }
 
-const
-    writable = new consolewriter();
+const writable = new consolewriter();
 
 process.stdin.pipe(writable);

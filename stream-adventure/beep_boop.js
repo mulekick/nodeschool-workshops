@@ -9,16 +9,13 @@ class bufferreader extends Readable {
         super(options);
     }
 
-    setdata(s) {
-        this.push(Buffer.from(s, `utf8`));
+    // eslint-disable-next-line class-methods-use-this
+    _read() {
+        this.push(Buffer.from(`beep boop\n`, `utf8`));
         this.push(null);
     }
-
-    // eslint-disable-next-line class-methods-use-this
-    _read() {}
 }
 
 const readable = new bufferreader();
 
-readable.setdata(`beep boop\n`);
 readable.pipe(process.stdout);
