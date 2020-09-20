@@ -1,3 +1,4 @@
+/* eslint-disable no-empty-function */
 /* eslint-disable id-denylist */
 'use strict';
 
@@ -27,6 +28,7 @@ class input extends Duplex {
         const
             // Count countries
             result = this.objects
+                // eslint-disable-next-line no-unused-vars
                 .reduce((r, x, i, a) => {
                     const {country} = x;
                     r[country] ? ++r[country] : r[country] = 1;
@@ -41,6 +43,7 @@ class input extends Duplex {
     }
 }
 
+// Why can't I move this into a module ?
 class aggregator extends Duplex {
     constructor(w, r, options) {
         super(options);

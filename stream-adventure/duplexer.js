@@ -35,6 +35,7 @@ class duplexer extends Duplex {
     }
 }
 
+// Why can't I move this into a module ?
 class aggregator extends Duplex {
     constructor(w, r, source, options) {
         super(options);
