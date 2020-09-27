@@ -6,35 +6,6 @@ const
     {spawn} = require(`child_process`),
     {Duplex} = require(`stream`);
 
-class duplexer extends Duplex {
-    constructor(label, source, options) {
-        super(options);
-        // Identifier for debugging purposes
-        this.label = label;
-    }
-
-    // eslint-disable-next-line class-methods-use-this
-    _write(chunk, encoding, callback) {
-        // Flowing mode implementation, each data written in the writable
-        // buffer is immediately pushed into the readable buffer
-        this.push(chunk.toString(`utf8`));
-        callback();
-    }
-
-    // eslint-disable-next-line class-methods-use-this
-    _read() {
-        // Reading data from the readable buffer
-    }
-
-    // eslint-disable-next-line class-methods-use-this
-    _final(callback) {
-        // Flowing mode implementation, no more data to write in the writable
-        // buffer, so null is pushed into the readable buffer to signal EOF
-        this.push(null);
-        callback();
-    }
-}
-
 // Why can't I move this into a module ?
 class aggregator extends Duplex {
     constructor(w, r, source, options) {
@@ -92,19 +63,11 @@ class aggregator extends Duplex {
 }
 
 module.exports = function(cmd, args) {
-
     const
         childp = spawn(cmd, args),
-        [ duplin, duplout ] = [ new duplexer(`tochild`), new duplexer(`fromchild`) ],
-        dupl = new aggregator(duplin, duplout);
-
-    // Pipe duplex readable source interface to child process stdin
-    dupl.outgoing().pipe(childp.stdin);
-    // Pipe child process stdout to duplex writable interface
-    childp.stdout.pipe(dupl.incoming());
+        dupl = new aggregator(childp.stdin, childp.stdout);
 
     return dupl;
-
 };
 
 
