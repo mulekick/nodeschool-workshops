@@ -1,5 +1,5 @@
 'use strict';
 
 let
-	example = null;
+    example = null;
 console.log(example = 123456789);

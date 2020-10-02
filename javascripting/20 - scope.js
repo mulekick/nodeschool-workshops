@@ -1,3 +1,6 @@
+/* eslint-disable no-shadow */
+/* eslint-disable no-unused-vars */
+/* eslint-disable func-names */
 /* eslint-disable max-nested-callbacks */
 'use strict';
 

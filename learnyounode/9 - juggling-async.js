@@ -18,7 +18,7 @@ const
     });
 
 (async() => {
-    for (let url of urls) {
+    for (const url of urls) {
         try {
             // eslint-disable-next-line no-await-in-loop
             const v = await retrieve(url);
