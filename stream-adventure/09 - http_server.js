@@ -2,7 +2,7 @@
 
 const
     {uppercazer} = require(`./stream-lib`),
-    upper = new uppercazer(),
+    upper = new uppercazer({decodeStrings: true, defaultEncoding: `utf8`, objectMode: false}),
     http = require(`http`),
     port = process.argv[2],
     srv = http.createServer((req, res) => {

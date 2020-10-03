@@ -10,7 +10,7 @@ const
 
 module.exports = function() {
     const
-        extr = new linesextractor({writableObjectMode: false, readableObjectMode: true}),
+        extr = new linesextractor({decodeStrings: true, defaultEncoding: `utf8`, writableObjectMode: false, readableObjectMode: true}),
         bkcl = new bookclassifier({writableObjectMode: true, readableObjectMode: false, writableHighWaterMark: 1}),
         gzip = createGzip();
     // Create pipeline
@@ -28,5 +28,5 @@ module.exports = function() {
         });
 
     // Aggregate first and last stream (pipeline returns last stream, unusable ...)
-    return new aggregator(extr, gzip, {objectMode: false});
+    return new aggregator(extr, gzip, {decodeStrings: true, defaultEncoding: `utf8`, objectMode: false});
 };

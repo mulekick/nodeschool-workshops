@@ -2,7 +2,7 @@
 
 const
     {caseconverter} = require(`./stream-lib`),
-    transformer = new caseconverter();
+    transformer = new caseconverter({decodeStrings: true, defaultEncoding: `utf8`, objectMode: false});
 
 process.stdin
     .pipe(transformer)

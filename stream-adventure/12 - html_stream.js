@@ -2,7 +2,7 @@
 
 const
     {htmlmodifier} = require(`./stream-lib`),
-    upper = new htmlmodifier();
+    upper = new htmlmodifier({decodeStrings: true, defaultEncoding: `utf8`, objectMode: false});
 
 process.stdin
     .pipe(upper)
