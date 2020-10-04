@@ -10,5 +10,6 @@ I will include the solutions I've written for the exercises featured on the foll
 2. learnyounode
 3. stream-adventure (I pride myself on not having used any npm modules except ws and tar !)
 4. bytewiser
+5. regexp-adventure
 
 Of course, all the solutions are valid.
