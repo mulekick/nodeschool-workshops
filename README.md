@@ -8,6 +8,7 @@ I will include the solutions I've written for the exercises featured on the foll
 
 1. javascripting
 2. learnyounode
-3. stream-adventure (I pride myself on having completed all the exercises here without using any npm modules except ws and tar !)
+3. stream-adventure (I pride myself on not having used any npm modules except ws and tar !)
+4. bytewiser
 
 Of course, all the solutions are valid.

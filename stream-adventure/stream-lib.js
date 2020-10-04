@@ -4,6 +4,8 @@
 
 const {Readable, Writable, Duplex, Transform} = require(`stream`);
 
+// ==> ALWAYS READ BUFFERS, PUSH STRINGS IF NEEDED <==
+
 // ----------------------------------
 class bufferreader extends Readable {
     constructor(b, options) {
@@ -59,34 +61,45 @@ class uppercazer extends Transform {
 class caseconverter extends Transform {
     constructor(options) {
         super(options);
+        // Init counter
         this.counter = 0;
-        this.line = ``;
+        // Init empty member buffer
+        this.line = Buffer.from(``);
     }
 
-    _transform(chunk, encoding, callback) {
+    _transform(buf, encoding, callback) {
         // Incoming buffer
-        const c = chunk.toString(`utf8`);
+        let bytes = buf;
 
-        // Data is delimited by carriage return ...
-        if (c.match(/\n/gu)) {
-            // Extracting end of line and buffering the remainder
-            const
-                s = c.split(/\n/u),
-                v = `${ this.line }${ s.shift() }\n`;
-            this.line = ``;
-            this.unshift(s.join(`\n`));
-            this.push(++this.counter % 2 === 0 ? v.toUpperCase() : v.toLowerCase());
-        } else {
-            this.line += c;
+        // If there's at least a new line in buffer
+        if (bytes.indexOf(0x0a) >= 0) {
+            let i = null;
+
+            // Isolate lines
+            while ((i = bytes.indexOf(0x0a)) >= 0) {
+                // Add end of line to member buffer, add carriage return
+                this.line = Buffer.concat([ this.line, bytes.slice(0, i), Buffer.from([ 0x0a ]) ]);
+                // Push member buffer
+                this.push(++this.counter % 2 === 0 ? this.line.toString(`utf8`).toUpperCase() : this.line.toString(`utf8`).toLowerCase());
+                // Empty member buffer
+                this.line = Buffer.from(``);
+                // Remove end of line
+                bytes = bytes.slice(i + 1);
+            }
         }
+
+        // Add remainder to member buffer
+        this.line = Buffer.concat([ this.line, bytes ]);
+
         // Success
         callback(null);
     }
 
     _final(callback) {
-        const
-            v = `${ this.line }\n`;
-        this.push(++this.counter % 2 === 0 ? v.toUpperCase() : v.toLowerCase());
+        // Add carriage return
+        this.line = Buffer.concat([ this.line, Buffer.from([ 0x0a ]) ]);
+        // Push member buffer
+        this.push(++this.counter % 2 === 0 ? this.line.toString(`utf8`).toUpperCase() : this.line.toString(`utf8`).toLowerCase());
         // Signal EOF
         this.push(null);
         callback();
@@ -252,43 +265,49 @@ class input extends Duplex {
 
 // ----------------------------------
 class linesextractor extends Duplex {
-
     // Set writable object mode to false, readable object mode to true
-
-    // eslint-disable-next-line no-useless-constructor
     constructor(options) {
         super(options);
         // Init empty member buffer
-        this.jsonstring = ``;
+        this.jsondata = Buffer.from(``);
     }
 
-    _write(chunk, encoding, callback) {
-        // Add incoming buffer read from stdin to member Buffer
-        this.jsonstring += chunk.toString(`utf8`);
+    _write(buf, encoding, callback) {
+        // Incoming buffer
+        let bytes = buf;
 
-        if (/\n/gu.test(this.jsonstring)) {
-            // Split resulting string on newlines
-            const arr = this.jsonstring.split(/\n/gu);
-            // Empty member buffer
-            this.jsonstring = ``;
+        // If there's at least a new line in buffer
+        if (bytes.indexOf(0x0a) >= 0) {
+            let i = null;
 
-            // Parse all elements from resulting array
-            for (const jsondata of arr) {
+            // Isolate lines
+            while ((i = bytes.indexOf(0x0a)) >= 0) {
+                // Add end of line to member buffer
+                this.jsondata = Buffer.concat([ this.jsondata, bytes.slice(0, i) ]);
+
+                // Parse member buffer
                 try {
                     // Empty string throws generic error
-                    if (jsondata === ``)
+                    if (this.jsondata === ``)
                         throw new Error();
 
-                    const obj = JSON.parse(jsondata);
-                    // Push all objects into readable buffer after parsing
+                    const obj = JSON.parse(this.jsondata.toString(`utf8`));
+                    // Push object into readable buffer
                     this.push(obj);
                 } catch (err) {
                     if (err instanceof SyntaxError)
-                        console.error(`invalid JSON : ${ jsondata }`);
+                        console.error(`invalid JSON : ${ this.jsondata.toString(`utf8`) }`);
                 }
+                // Empty member buffer
+                this.jsondata = Buffer.from(``);
+                // Remove end of line
+                bytes = bytes.slice(i + 1);
             }
-
         }
+
+        // Add remainder to member buffer
+        this.jsondata = Buffer.concat([ this.jsondata, bytes ]);
+
         // Success
         callback(null);
     }
@@ -297,6 +316,20 @@ class linesextractor extends Duplex {
     _read() {}
 
     _final(callback) {
+
+        // Parse member buffer
+        try {
+            // Empty string throws generic error
+            if (this.jsondata === ``)
+                throw new Error();
+
+            const obj = JSON.parse(this.jsondata.toString(`utf8`));
+            // Push object into readable buffer
+            this.push(obj);
+        } catch (err) {
+            if (err instanceof SyntaxError)
+                console.error(`invalid JSON : ${ this.jsondata.toString(`utf8`) }`);
+        }
         // Signal EOF
         this.push(null);
         callback();

@@ -13,6 +13,7 @@ class bufferreader extends Readable {
 
     _read() {
         this.push(this.buf);
+        // Signal EOF
         this.push(null);
     }
 }
@@ -26,7 +27,9 @@ class consolewriter extends Writable {
 
     // eslint-disable-next-line class-methods-use-this
     _write(chunk, encoding, callback) {
-        console.log(`writing: ${ typeof chunk === `string` ? chunk : chunk.toString(`utf8`) }`);
+        // Incoming buffer
+        console.log(`writing: ${ chunk.toString(`utf8`) }`);
+        // Success
         callback(null);
     }
 }
@@ -39,9 +42,10 @@ class uppercazer extends Transform {
     }
 
     _transform(chunk, encoding, callback) {
-        const c = typeof chunk === `string` ? chunk : chunk.toString(`utf8`);
-        this.push(c.toUpperCase());
-        callback();
+        // Incoming buffer
+        this.push(chunk.toString(`utf8`).toUpperCase());
+        // Success
+        callback(null);
     }
 
     _final(callback) {
@@ -60,8 +64,8 @@ class caseconverter extends Transform {
     }
 
     _transform(chunk, encoding, callback) {
-
-        const c = typeof chunk === `string` ? chunk : chunk.toString(`utf8`);
+        // Incoming buffer
+        const c = chunk.toString(`utf8`);
 
         // Data is delimited by carriage return ...
         if (c.match(/\n/gu)) {
@@ -75,7 +79,8 @@ class caseconverter extends Transform {
         } else {
             this.line += c;
         }
-        callback();
+        // Success
+        callback(null);
     }
 
     _final(callback) {
@@ -99,6 +104,7 @@ class concatenator extends Duplex {
     _write(chunk, encoding, callback) {
         // Push incoming buffers into member buffers array
         this.buffers.push(chunk);
+        // Success
         callback(null);
     }
 
@@ -126,10 +132,9 @@ class htmlmodifier extends Transform {
     }
 
     _transform(chunk, encoding, callback) {
-        // Default encoding is UTF8, so chunk type does not matter
-        const b = Buffer.from(chunk);
-        // Push incoming buffers into member buffers array
-        this.buffers.push(b);
+        // Push incoming buffer into member buffers array
+        this.buffers.push(chunk);
+        // Success
         callback(null);
     }
 
@@ -178,6 +183,7 @@ class aggregator extends Duplex {
         // Flowing mode implementation, each data written in the writable
         // buffer is immediately written into the 'outgoing' writable buffer as well
         this.outStream.write(chunk);
+        // Success
         callback(null);
     }
 
@@ -214,9 +220,11 @@ class input extends Duplex {
     }
 
     // eslint-disable-next-line class-methods-use-this
-    _write(chunk, encoding, callback) {
-        this.objects.push(chunk);
-        callback();
+    _write(obj, encoding, callback) {
+        // Incoming object
+        this.objects.push(obj);
+        // Success
+        callback(null);
     }
 
     // eslint-disable-next-line class-methods-use-this
@@ -255,8 +263,8 @@ class linesextractor extends Duplex {
     }
 
     _write(chunk, encoding, callback) {
-        // Add data chunk read from stdin to member Buffer
-        this.jsonstring += typeof chunk === `string` ? chunk : chunk.toString(`utf8`);
+        // Add incoming buffer read from stdin to member Buffer
+        this.jsonstring += chunk.toString(`utf8`);
 
         if (/\n/gu.test(this.jsonstring)) {
             // Split resulting string on newlines
@@ -281,7 +289,8 @@ class linesextractor extends Duplex {
             }
 
         }
-        callback();
+        // Success
+        callback(null);
     }
 
     // eslint-disable-next-line class-methods-use-this
@@ -308,13 +317,14 @@ class bookclassifier extends Duplex {
     }
 
     // eslint-disable-next-line class-methods-use-this
-    _write(chunk, encoding, callback) {
-        // Process object for catalogue
+    _write(obj, encoding, callback) {
+        // Incoming object
         // eslint-disable-next-line no-shadow
-        const {type, name} = chunk;
+        const {type, name} = obj;
         // eslint-disable-next-line no-unused-expressions
         type === `genre` ? this.cat.push({name: name, books: []}) : type === `book` ? this.cat[this.cat.length - 1][`books`].push(name) : false;
-        callback();
+        // Success
+        callback(null);
     }
 
     // eslint-disable-next-line class-methods-use-this

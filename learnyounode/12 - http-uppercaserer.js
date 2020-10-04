@@ -6,7 +6,7 @@ const
     port = process.argv[2];
 
 const
-    upper = new uppercazer(),
+    upper = new uppercazer({decodeStrings: true, defaultEncoding: `utf8`, objectMode: false}),
     srv = http.createServer((req, res) => {
 
         if (req.method === `POST`) {

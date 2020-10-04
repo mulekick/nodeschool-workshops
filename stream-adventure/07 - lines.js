@@ -1,3 +1,4 @@
+/* eslint-disable multiline-comment-style */
 'use strict';
 
 const
