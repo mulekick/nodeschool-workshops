@@ -224,10 +224,8 @@ class aggregator extends Duplex {
 
 // ----------------------------------
 class input extends Duplex {
-    constructor(label, options) {
+    constructor(options) {
         super(options);
-        // Identifier for debugging purposes
-        this.label = label;
         // Store countries
         this.objects = [];
     }
@@ -288,7 +286,7 @@ class linesextractor extends Duplex {
                 // Parse member buffer
                 try {
                     // Empty string throws generic error
-                    if (this.jsondata === ``)
+                    if (this.jsondata.length === 0)
                         throw new Error();
 
                     const obj = JSON.parse(this.jsondata.toString(`utf8`));
@@ -320,7 +318,7 @@ class linesextractor extends Duplex {
         // Parse member buffer
         try {
             // Empty string throws generic error
-            if (this.jsondata === ``)
+            if (this.jsondata.length === 0)
                 throw new Error();
 
             const obj = JSON.parse(this.jsondata.toString(`utf8`));
