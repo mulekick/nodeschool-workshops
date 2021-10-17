@@ -1,6 +1,3 @@
-/* eslint-disable multiline-comment-style */
-/* eslint-disable no-empty-function */
-/* eslint-disable id-denylist */
 'use strict';
 
 const

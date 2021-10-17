@@ -1,3 +1,5 @@
+/* eslint-disable no-empty-function */
+/* eslint-disable class-methods-use-this */
 /* eslint-disable id-denylist */
 /* eslint-disable multiline-comment-style */
 'use strict';
@@ -27,7 +29,6 @@ class consolewriter extends Writable {
         super(options);
     }
 
-    // eslint-disable-next-line class-methods-use-this
     _write(chunk, encoding, callback) {
         // Incoming buffer
         console.log(`writing: ${ chunk.toString(`utf8`) }`);
@@ -77,7 +78,7 @@ class caseconverter extends Transform {
 
             // Isolate lines
             while ((i = bytes.indexOf(0x0a)) >= 0) {
-                // Add end of line to member buffer, add carriage return
+                // Add end of line to member buffer, add line feed
                 this.line = Buffer.concat([ this.line, bytes.slice(0, i), Buffer.from([ 0x0a ]) ]);
                 // Push member buffer
                 this.push(++this.counter % 2 === 0 ? this.line.toString(`utf8`).toUpperCase() : this.line.toString(`utf8`).toLowerCase());
@@ -96,7 +97,7 @@ class caseconverter extends Transform {
     }
 
     _final(callback) {
-        // Add carriage return
+        // Add line feed
         this.line = Buffer.concat([ this.line, Buffer.from([ 0x0a ]) ]);
         // Push member buffer
         this.push(++this.counter % 2 === 0 ? this.line.toString(`utf8`).toUpperCase() : this.line.toString(`utf8`).toLowerCase());
@@ -121,7 +122,6 @@ class concatenator extends Duplex {
         callback(null);
     }
 
-    // eslint-disable-next-line class-methods-use-this
     _read() {
         // Waiting for all data to be buffered before pushing
     }
@@ -158,7 +158,7 @@ class htmlmodifier extends Transform {
             // eslint-disable-next-line prefer-named-capture-group
             rgx = /(?<=[^<]+class="loud"[^>]*>)([^<]+)(?=<)/gu;
         // push into readable buffer
-        this.push(html.replace(rgx, (match, offset, string) => match.toUpperCase()));
+        this.push(html.replace(rgx, match => match.toUpperCase()));
         // Signal EOF
         this.push(null);
         callback();
@@ -191,7 +191,6 @@ class aggregator extends Duplex {
             });
     }
 
-    // eslint-disable-next-line class-methods-use-this
     _write(chunk, encoding, callback) {
         // Flowing mode implementation, each data written in the writable
         // buffer is immediately written into the 'outgoing' writable buffer as well
@@ -200,12 +199,10 @@ class aggregator extends Duplex {
         callback(null);
     }
 
-    // eslint-disable-next-line class-methods-use-this
     _read() {
         // Reading data from the readable buffer
     }
 
-    // eslint-disable-next-line class-methods-use-this
     _final(callback) {
         // Flowing mode implementation, no more data to write in the writable
         // buffer, so we end the 'outgoing' stream
@@ -230,7 +227,6 @@ class input extends Duplex {
         this.objects = [];
     }
 
-    // eslint-disable-next-line class-methods-use-this
     _write(obj, encoding, callback) {
         // Incoming object
         this.objects.push(obj);
@@ -238,10 +234,8 @@ class input extends Duplex {
         callback(null);
     }
 
-    // eslint-disable-next-line class-methods-use-this
     _read() {}
 
-    // eslint-disable-next-line class-methods-use-this
     _final(callback) {
         const
             // Count countries
@@ -310,7 +304,6 @@ class linesextractor extends Duplex {
         callback(null);
     }
 
-    // eslint-disable-next-line class-methods-use-this
     _read() {}
 
     _final(callback) {
@@ -347,7 +340,6 @@ class bookclassifier extends Duplex {
         this.cat = [];
     }
 
-    // eslint-disable-next-line class-methods-use-this
     _write(obj, encoding, callback) {
         // Incoming object
         // eslint-disable-next-line no-shadow
@@ -358,10 +350,8 @@ class bookclassifier extends Duplex {
         callback(null);
     }
 
-    // eslint-disable-next-line class-methods-use-this
     _read() {}
 
-    // eslint-disable-next-line class-methods-use-this
     _final(callback) {
         // Push in readable buffer
         this.push(JSON.stringify(this.cat));

@@ -4,11 +4,11 @@
         "node": true,
         "browser": true
     },
-    //Base configuration
+    // Base configuration
     "extends": "eslint:recommended",
     "parserOptions": {
         "ecmaVersion": 11,
-        //Use CommonJS type modules (require)
+        // Use CommonJS type modules (require)
         "sourceType": "script",
         "ecmaFeatures": {
             "impliedStrict ": true
@@ -17,8 +17,16 @@
     "globals": {
         "app": "readonly"
     },
+    "plugins": [
+        // Lint scripts embedded in HTML pages
+        "html"
+    ],
+    "settings": {
+        // extensions of HTML files to be linted
+        "html/html-extensions": [".html"]
+    },
     "rules": {
-        //Enable additional rules
+        // Enable additional rules
         "indent": ["error", 4],
 
         "linebreak-style": ["error", "unix"],
@@ -28,7 +36,7 @@
         }],
         "semi": ["error", "always"],
         
-        //Override default options for rules from base configurations
+        // Override default options for rules from base configurations
 
         // --------- possible errors --------------
         "no-await-in-loop": ["error"],
@@ -160,8 +168,8 @@
         "func-names": ["warn", "never"],
         "func-style": ["error", "expression"],
         "function-call-argument-newline": ["warn", "consistent"],
-        "id-denylist": ["warn", "resolve", "reject", "err", "data", "result"],
-        "id-match": ["warn", "^[a-zA-Z_$]+$", {
+        "id-denylist": ["off", "resolve", "reject", "err", "data", "result"],
+        "id-match": ["warn", "^[0-9a-zA-Z_$]+$", {
             "properties": true,
             "onlyDeclarations": false,
             "ignoreDestructuring": true
@@ -181,7 +189,7 @@
         "max-statements-per-line": ["warn", { 
             "max": 3
         }],
-        "multiline-comment-style": ["error", "starred-block"],
+        "multiline-comment-style": ["off", "starred-block"],
         "new-parens": ["error"],
         "newline-per-chained-call": ["error", { "ignoreChainWithDepth": 3 }],
         "no-array-constructor": ["error"],
@@ -212,8 +220,8 @@
         "one-var": ["error", "consecutive"],
         "one-var-declaration-per-line": ["error", "always"],
         "operator-assignment": ["warn", "always"],
-        "operator-linebreak": ["warn", "none"],
-        "padding-line-between-statements": ["error", {
+        "operator-linebreak": ["off", "none"],
+        "padding-line-between-statements": ["off", {
             "blankLine": "always",
             "prev": "*",
             "next": ["if", "for", "class", "const", "do", "let", "return", "switch", "try", "var", "while"]
@@ -274,7 +282,7 @@
             "after": false
         }],
         
-        //Disable rules from base configurations
+        // Disable rules from base configurations
 
         // --------- possible errors --------------
         "no-sparse-arrays": ["off"],
@@ -290,8 +298,8 @@
 
         // ------------ ECMAScript 6 --------------
     },
-    //Disable ESLint inline comments
+    // Disable ESLint inline comments
     "noInlineConfig": false,
-    //Don't look for ESLint files in parent folders
+    // Don't look for ESLint files in parent folders
     "root": true
 }

@@ -59,7 +59,6 @@ class concat extends Writable {
         this.buffer = Buffer.from(``);
     }
 
-    // eslint-disable-next-line class-methods-use-this
     _write(buf, encoding, callback) {
         // Incoming buffer
         this.buffer = Buffer.concat([ this.buffer, buf ]);
